@@ -4,6 +4,7 @@
     <lib dir="${solr.install.dir:../../../..}/libexec/contrib/analysis-extras/lucene-libs" regex="lucene-analyzers-icu-.*\.jar" />
     <lib dir="${solr.install.dir:../../../..}/contrib/analysis-extras/lib" regex="icu4j-.*\.jar" />
     <lib dir="${solr.install.dir:../../../..}/contrib/analysis-extras/lucene-libs" regex="lucene-analyzers-icu-.*\.jar" />
+    <lib dir="${solr.install.dir:../../../..}/dist/" regex="solr-analysis-extras-\d.*\.jar" />
 
     <luceneMatchVersion>7.5.0</luceneMatchVersion>
 
