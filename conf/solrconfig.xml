@@ -97,55 +97,29 @@
         <httpCaching never304="true"/>
     </requestDispatcher>
 
-    <searchComponent class="solr.HighlightComponent" name="highlight">
-        <highlighting class="org.apache.solr.highlight.PostingsSolrHighlighter"/>
-    </searchComponent>
-
     <requestHandler name="/select" class="solr.SearchHandler">
         <lst name="defaults">
             <str name="echoParams">explicit</str>
-            <int name="rows">10</int>
-            <str name="hl.usePhraseHighlighter">false</str>
-            <str name="hl.useFastVectorHighlighter">true</str>
-            <str name="hl.boundaryScanner">breakIterator</str>
-
-            <int name="hl.snippets">1</int>
-            <str name="hl.tag.pre">&lt;em&gt;</str>
-            <str name="hl.tag.post">&lt;/em&gt;</str>
-            <str name="hl.tag.ellipsis">... </str>
-            <bool name="hl.defaultSummary">true</bool>
-            <str name="hl.encoder">simple</str>
-            <float name="hl.score.k1">1.2</float>
-            <float name="hl.score.b">0.75</float>
-            <float name="hl.score.pivot">87</float>
-            <str name="hl.bs.type">SENTENCE</str>
-            <int name="hl.maxAnalyzedChars">1000</int>
-            <str name="hl.multiValuedSeparatorChar"> </str>
-            <bool name="hl.highlightMultiTerm">false</bool>
+            <int name="rows">20</int>
+            <str name="q.op">AND</str>
+            <str name="df">text</str>
+            <str name="wt">json</str>
+            <str name="defType">edismax</str>
+            <int name="ps">10</int>
         </lst>
-
     </requestHandler>
 
     <!-- A request handler that returns indented JSON by default -->
     <requestHandler name="/query" class="solr.SearchHandler">
         <lst name="defaults">
             <str name="echoParams">explicit</str>
-            <str name="wt">json</str>
-            <str name="indent">true</str>
+            <int name="rows">20</int>
+            <str name="q.op">AND</str>
             <str name="df">text</str>
+            <str name="wt">json</str>
+            <str name="defType">edismax</str>
+            <int name="ps">10</int>
         </lst>
-    </requestHandler>
-
-    <requestHandler name="/export" class="solr.SearchHandler">
-        <lst name="invariants">
-            <str name="rq">{!xport}</str>
-            <str name="wt">xsort</str>
-            <str name="distrib">false</str>
-        </lst>
-
-        <arr name="components">
-            <str>query</str>
-        </arr>
     </requestHandler>
 
     <initParams path="/update/**,/query,/select,/tvrh,/elevate,/spell">
@@ -153,34 +127,6 @@
             <str name="df">text</str>
         </lst>
     </initParams>
-
-    <requestHandler name="/analysis/field"
-                    startup="lazy"
-                    class="solr.FieldAnalysisRequestHandler"/>
-
-    <requestHandler name="/analysis/document"
-                    class="solr.DocumentAnalysisRequestHandler"
-                    startup="lazy"/>
-
-    <!-- Echo the request contents back to the client -->
-    <requestHandler name="/debug/dump" class="solr.DumpRequestHandler">
-        <lst name="defaults">
-            <str name="echoParams">explicit</str>
-            <str name="echoHandler">true</str>
-        </lst>
-    </requestHandler>
-    <searchComponent name="terms" class="solr.TermsComponent"/>
-
-    <!-- A request handler for demonstrating the terms component -->
-    <requestHandler name="/terms" class="solr.SearchHandler" startup="lazy">
-        <lst name="defaults">
-            <bool name="terms">true</bool>
-            <bool name="distrib">false</bool>
-        </lst>
-        <arr name="components">
-            <str>terms</str>
-        </arr>
-    </requestHandler>
 
     <!-- Legacy config for the admin interface -->
     <admin>

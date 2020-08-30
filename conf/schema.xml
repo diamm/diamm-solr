@@ -26,7 +26,7 @@
     <dynamicField name="*_dt" type="date" indexed="true" stored="true" />
 
     <!-- index fields to sort alphanumerically. Useful for things like shelfmarks and folio numbers -->
-    <dynamicField name="*_ans" type="text_alphanumeric_sort" indexed="true" stored="false" />
+    <dynamicField name="*_ans" type="sort" indexed="true" stored="false" />
 
     <!-- stored but not indexed -->
     <dynamicField name="*_sni" type="string" indexed="false" stored="true" />
@@ -47,6 +47,7 @@
     <!-- archive records store the city in the city_s field; sources store it in the archive_city_s -->
     <copyField source="archive_city_s" dest="text" />
     <copyField source="city_s" dest="text" />
+    <copyField source="country_s" dest="text" />
     <copyField source="city_variants_ss" dest="text" />
     <copyField source="last_name_s" dest="text" />
     <copyField source="variant_names_ss" dest="text" />
@@ -89,30 +90,29 @@
     <fieldType name="uuid" class="solr.UUIDField" indexed="true" />
     <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
     <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" />
-    <fieldType name="int" class="solr.TrieIntField" precisionStep="0" positionIncrementGap="0" />
-    <fieldType name="date" class="solr.TrieDateField" precisionStep="0" positionIncrementGap="0" />
-    <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="int" class="solr.IntPointField" docValues="true" sortMissingLast="true" />
+    <fieldType name="long" class="solr.LongPointField" docValues="true" sortMissingLast="true" />
+    <fieldType name="date" class="solr.DatePointField" sortMissingLast="true" />
+    <fieldType name="sort" class="solr.ICUCollationField" locale="" numeric="true" strength="secondary" sortMissingLast="true" />
 
     <!-- text fields -->
-    <fieldType name="text_fulltext" class="solr.TextField" autoGeneratePhraseQueries="true" multiValued="true">
+    <fieldType name="text_fulltext" class="solr.TextField" autoGeneratePhraseQueries="true" multiValued="true" termVectors="true">
         <analyzer type="index">
             <tokenizer class="solr.ICUTokenizerFactory" />
             <filter class="solr.ICUFoldingFilterFactory"/>
-            <filter class="solr.StopFilterFactory" words="stopwords.txt" />
-            <filter class="solr.HunspellStemFilterFactory" dictionary="lang/en_GB.dic" affix="lang/en_GB.aff" ignoreCase="true" />
-            <!--<filter class="solr.PorterStemFilterFactory" />-->
-            <filter class="solr.WordDelimiterGraphFilterFactory" splitOnNumerics="0" preserveOriginal="1" />
+            <filter class="solr.WordDelimiterGraphFilterFactory" splitOnNumerics="0" preserveOriginal="1" types="wdtypes.txt" />
+            <filter class="solr.KStemFilterFactory" />
             <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true" />
+            <filter class="solr.CommonGramsFilterFactory" ignoreCase="true" words="stopwords.txt" />
             <filter class="solr.FlattenGraphFilterFactory"/>
         </analyzer>
         <analyzer type="query">
             <tokenizer class="solr.ICUTokenizerFactory" />
             <filter class="solr.ICUFoldingFilterFactory"/>
-            <filter class="solr.StopFilterFactory" words="stopwords.txt" />
-            <filter class="solr.HunspellStemFilterFactory" dictionary="lang/en_GB.dic" affix="lang/en_GB.aff" ignoreCase="true" />
-            <!--<filter class="solr.PorterStemFilterFactory" />-->
-            <filter class="solr.WordDelimiterGraphFilterFactory" splitOnNumerics="0" preserveOriginal="1" />
+            <filter class="solr.WordDelimiterGraphFilterFactory" splitOnNumerics="0" preserveOriginal="1" types="wdtypes.txt" />
+            <filter class="solr.KStemFilterFactory" />
             <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true" />
+            <filter class="solr.CommonGramsQueryFilterFactory" ignoreCase="true" words="stopwords.txt" />
         </analyzer>
     </fieldType>
 
@@ -142,43 +142,13 @@
         <analyzer type="index">
             <!-- <tokenizer class="solr.StandardTokenizerFactory" /> -->
             <tokenizer class="solr.WhitespaceTokenizerFactory"/>
-            <filter class="solr.WordDelimiterFilterFactory"
-                    generateWordParts="1"
-                    generateNumberParts="1"
-                    catenateWords="1"
-                    catenateNumbers="1"
-                    catenateAll="0"
-                    splitOnCaseChange="1"/>
+            <filter class="solr.WordDelimiterGraphFilterFactory"
+                    splitOnNumerics="0"
+                    preserveOriginal="1"
+                    types="wdtypes.txt" />
         </analyzer>
         <analyzer type="query">
             <tokenizer class="solr.StandardTokenizerFactory" />
-        </analyzer>
-    </fieldType>
-
-    <!-- Based on https://gist.github.com/peaeater/0b3473e7457dbd4b527e -->
-    <fieldType name="text_alphanumeric_sort" class="solr.TextField" sortMissingLast="false" omitNorms="true">
-        <analyzer>
-            <!-- <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-FoldToASCII.txt"/> -->
-
-            <!-- KeywordTokenizer does no actual tokenizing, so the entire
-                 input string is preserved as a single token
-            -->
-            <tokenizer class="solr.KeywordTokenizerFactory"/>
-            <filter class="solr.ICUNormalizer2FilterFactory" name="nfkc_cf" mode="compose"/>
-            <!-- The LowerCase TokenFilter does what you expect, which can be useful
-             when you want your sorting to be case insensitive
-            -->
-            <filter class="solr.LowerCaseFilterFactory" />
-            <!-- The TrimFilter removes any leading or trailing whitespace -->
-            <filter class="solr.TrimFilterFactory" />
-            <!-- Remove leading articles -->
-            <filter class="solr.PatternReplaceFilterFactory" pattern="^(ms. |mss. |ms |mss )" replacement="" replace="all" />
-            <!-- Left-pad numbers with zeroes -->
-            <filter class="solr.PatternReplaceFilterFactory" pattern="(\d+)" replacement="00000$1" replace="all" />
-            <!-- Left-trim zeroes to produce 6 digit numbers -->
-            <filter class="solr.PatternReplaceFilterFactory" pattern="0*([0-9]{6,})" replacement="$1" replace="all" />
-            <!-- Remove all but alphanumeric characters -->
-            <filter class="solr.PatternReplaceFilterFactory" pattern="([^a-z0-9\p{L}\.])" replacement="" replace="all" />
         </analyzer>
     </fieldType>
 </schema>
