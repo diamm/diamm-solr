@@ -13,6 +13,8 @@
     <dynamicField name="*_id" type="int" indexed="true" stored="true" />
     <dynamicField name="*_i" type="int" indexed="true" stored="true" />
     <dynamicField name="*_ii" type="int" indexed="true" stored="true" multiValued="true" />
+    <dynamicField name="*_f" type="float" indexed="true" stored="true" />
+    <dynamicField name="*_ff" type="float" indexed="true" stored="true" multiValued="true" />
     <dynamicField name="*_s" type="string" indexed="true" stored="true" />
     <dynamicField name="*_ss" type="string" indexed="true" stored="true" multiValued="true" />
     <dynamicField name="*_t" type="text_general" indexed="true" stored="true" />
@@ -91,6 +93,7 @@
     <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
     <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" />
     <fieldType name="int" class="solr.IntPointField" docValues="true" sortMissingLast="true" />
+    <fieldType name="float" class="solr.FloatPointField" docValues="true" sortMissingLast="true" />
     <fieldType name="long" class="solr.LongPointField" docValues="true" sortMissingLast="true" />
     <fieldType name="date" class="solr.DatePointField" sortMissingLast="true" />
     <fieldType name="sort" class="solr.ICUCollationField" locale="" numeric="true" strength="secondary" sortMissingLast="true" />
