@@ -54,6 +54,7 @@
     <copyField source="last_name_s" dest="text" />
     <copyField source="variant_names_ss" dest="text" />
     <copyField source="siglum_s" dest="text" />
+    <copyField source="former_sigla_ss" dest="text" />
     <copyField source="voice_text_txt" dest="text" />
     <copyField source="cluster_shelfmark_s" dest="text" />
     <copyField source="archives_ss" dest="text" />
