@@ -35,6 +35,7 @@
     <dynamicField name="*_ssni" type="string" indexed="false" stored="true" multiValued="true" />
     <dynamicField name="*_ssdv" type="string" indexed="true" stored="true" multiValued="true" docValues="true" />
 
+    <dynamicField name="*_json" type="json" multiValued="false" />
     <uniqueKey>id</uniqueKey>
 
     <!-- copyfields go here -->
@@ -98,6 +99,7 @@
     <fieldType name="long" class="solr.LongPointField" docValues="true" sortMissingLast="true" />
     <fieldType name="date" class="solr.DatePointField" sortMissingLast="true" />
     <fieldType name="sort" class="solr.ICUCollationField" locale="" numeric="true" strength="secondary" sortMissingLast="true" />
+    <fieldType name="json" class="solr.TextField" indexed="false" stored="true" docValues="false" />
 
     <!-- text fields -->
     <fieldType name="text_fulltext" class="solr.TextField" autoGeneratePhraseQueries="true" multiValued="true" termVectors="true">
