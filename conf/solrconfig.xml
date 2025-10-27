@@ -120,6 +120,7 @@
                 <str>compositions_json:[json]</str>
                 <str>voices_json:[json]</str>
                 <str>sets_json:[json]</str>
+                <str>composers_json:[json]</str>
             </arr>
         </lst>
     </requestHandler>
